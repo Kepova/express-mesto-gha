@@ -25,6 +25,4 @@ app.use((req, res, next) => {
 app.use('/', UserRouter);
 app.use('/', CardsRouter);
 
-app.listen(PORT, () => {
-  console.log('Сервер запущен');
-});
+app.listen(PORT);
