@@ -33,7 +33,7 @@ const deleteCard = (req, res) => {
   const { cardId } = req.params;
   Card.findByIdAndRemove(cardId)
     .then((card) => {
-      if (card) {
+      if (card && (card.owner === req.user._id)) {
         res.send(card);
       }
       return res.status(NOT_FOUND).send({ message: 'Карточка с указанным _id не найдена' });
