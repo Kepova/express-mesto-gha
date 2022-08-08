@@ -6,7 +6,15 @@ const {
 
 UserRouter.get('/users', getUsers); // возвращает всех пользователей
 UserRouter.get('/users/me', getСurrentUser); // возвращает текущего пользователя
-UserRouter.get('/users/:userId', getUser); // возвращает пользователя по _id
+UserRouter.get(
+  '/users/:userId',
+  celebrate({
+    params: Joi.object().keys({
+      userId: Joi.string().alphanum().length(24),
+    }),
+  }),
+  getUser,
+); // возвращает пользователя по _id
 UserRouter.patch(
   '/users/me',
   celebrate({
