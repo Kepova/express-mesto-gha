@@ -17,6 +17,7 @@ const getUsers = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные при создании пользователя'));
+        return;
       }
       next(err);
     });
@@ -61,14 +62,16 @@ const createUser = (req, res, next) => {
         password: hash,
       })
         .then((user) => {
-          res.status(CREATED).send({ 'Создан новый пользователь': user.email });
+          res.status(CREATED).send(user);
         })
         .catch((err) => {
           if ((err.name === 'ValidationError') && (err.errors.avatar)) {
             next(new BadRequestError('Ссылка на аватар введена с ошибкой или не передана'));
+            return;
           }
           if (err.code === 11000) {
             next(new ConflictError('Пользователь с таким email уже существует'));
+            return;
           }
           next(err);
         });
@@ -120,9 +123,11 @@ const updateUser = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные при обновлении профиля'));
+        return;
       }
       if (err.name === 'CastError') {
         next(new NotFoundError('Пользователь с указанным _id не найден'));
+        return;
       }
       next(err);
     });
@@ -135,9 +140,11 @@ const updateAvatar = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные при обновлении аватара'));
+        return;
       }
       if (err.name === 'CastError') {
         next(new NotFoundError('Пользователь с указанным _id не найден'));
+        return;
       }
       next(err);
     });
