@@ -1,12 +1,26 @@
 const CardsRouter = require('express').Router();
+const { isObjectIdOrHexString } = require('mongoose');
 const { celebrate, Joi } = require('celebrate');
 const {
   getCards, createCard, deleteCard, likeCard, dislikeCard,
 } = require('../controllers/cards');
 
-CardsRouter.get('/cards', getCards); // возвращает все карточки
+const validationId = (value) => {
+  if (isObjectIdOrHexString(value)) {
+    return value;
+  }
+  throw new Error('Передан некорректный _id карточки');
+};
+
+const joiValidationId = {
+  params: Joi.object().keys({
+    cardId: Joi.string().custom(validationId),
+  }),
+};
+
+CardsRouter.get('/', getCards); // возвращает все карточки
 CardsRouter.post(
-  '/cards',
+  '/',
   celebrate({
     body: Joi.object().keys({
       name: Joi.string().required().min(2).max(30),
@@ -16,30 +30,18 @@ CardsRouter.post(
   createCard,
 ); // создаёт карточку
 CardsRouter.delete(
-  '/cards/:cardId',
-  celebrate({
-    params: Joi.object().keys({
-      cardId: Joi.string().alphanum().length(24),
-    }),
-  }),
+  '/:cardId',
+  celebrate(joiValidationId),
   deleteCard,
 ); // удаляет карточку
 CardsRouter.put(
-  '/cards/:cardId/likes',
-  celebrate({
-    params: Joi.object().keys({
-      cardId: Joi.string().alphanum().length(24),
-    }),
-  }),
+  '/:cardId/likes',
+  celebrate(joiValidationId),
   likeCard,
 ); // поставить лайк карточке
 CardsRouter.delete(
-  '/cards/:cardId/likes',
-  celebrate({
-    params: Joi.object().keys({
-      cardId: Joi.string().alphanum().length(24),
-    }),
-  }),
+  '/:cardId/likes',
+  celebrate(joiValidationId),
   dislikeCard,
 ); // убрать лайк с карточки
 

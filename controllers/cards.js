@@ -8,13 +8,7 @@ const CREATED = 201;
 const getCards = (req, res, next) => {
   Card.find({})
     .then((cards) => res.send(cards))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        next(new BadRequestError('Переданы некорректные данные при создании карточки'));
-        return;
-      }
-      next(err);
-    });
+    .catch(next);
 };
 
 const createCard = (req, res, next) => {

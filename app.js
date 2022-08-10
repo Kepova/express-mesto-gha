@@ -7,6 +7,7 @@ const UserRouter = require('./routes/users');
 const CardsRouter = require('./routes/cards');
 const { createUser, login } = require('./controllers/users');
 const auth = require('./middlewares/auth');
+const NotFoundError = require('./errors/not-found-err');
 const CentralizedError = require('./errors/centralized-error');
 
 const { PORT = 3000 } = process.env;
@@ -14,8 +15,6 @@ const app = express();
 
 mongoose.connect('mongodb://localhost:27017/mestodb', {
   useNewUrlParser: true,
-  useCreateIndex: true,
-  useFindAndModify: false,
   useUnifiedTopology: true,
 });
 
@@ -47,13 +46,13 @@ app.post(
 );
 
 app.use(auth);
-app.use('/', UserRouter);
-app.use('/', CardsRouter);
+app.use('/users', UserRouter);
+app.use('/cards', CardsRouter);
 
 app.use(errors());
+app.use((req, res, next) => {
+  next(new NotFoundError('Страница не найдена'));
+});
 app.use(CentralizedError);
 
-app.use((req, res) => {
-  res.status(404).send({ message: 'Страница не найдена' });
-});
 app.listen(PORT);

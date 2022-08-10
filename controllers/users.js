@@ -14,20 +14,11 @@ const CREATED = 201;
 const getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send(users))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        next(new BadRequestError('Переданы некорректные данные при создании пользователя'));
-        return;
-      }
-      next(err);
-    });
+    .catch(next);
 };
 
 const getUser = (req, res, next) => {
   const { userId } = req.params;
-  if (!validator.isMongoId(userId)) {
-    throw new BadRequestError('Передан некорректный _id пользователя');
-  }
   User.findById(userId)
     .then((user) => {
       if (!user) {
@@ -35,7 +26,13 @@ const getUser = (req, res, next) => {
       }
       res.send(user);
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new NotFoundError('Пользователь с указанным _id не найден'));
+        return;
+      }
+      next(err);
+    });
 };
 
 const createUser = (req, res, next) => {
@@ -46,12 +43,6 @@ const createUser = (req, res, next) => {
     email,
     password,
   } = req.body;
-  if (!email || !password) {
-    throw new BadRequestError('Email или пароль не переданы');
-  }
-  if (!validator.isEmail(email)) {
-    throw new BadRequestError('Email введен с ошибкой или не передан');
-  }
   bcrypt.hash(password, SALT_ROUNDS)
     .then((hash) => {
       User.create({
@@ -70,8 +61,8 @@ const createUser = (req, res, next) => {
           });
         })
         .catch((err) => {
-          if ((err.name === 'ValidationError') && (err.errors.avatar)) {
-            next(new BadRequestError('Ссылка на аватар введена с ошибкой или не передана'));
+          if (err.name === 'ValidationError') {
+            next(new BadRequestError('Данные заполнены с ошибкой или не переданы'));
             return;
           }
           if (err.code === 11000) {
@@ -86,12 +77,6 @@ const createUser = (req, res, next) => {
 
 const login = (req, res, next) => {
   const { email, password } = req.body;
-  if (!email || !password) {
-    throw new BadRequestError('Email или пароль не переданы');
-  }
-  if (!validator.isEmail(email)) {
-    throw new BadRequestError('Email введен с ошибкой или не передан');
-  }
   User.findUserByCredentials({ email, password })
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '7d' });
@@ -123,6 +108,9 @@ const updateUser = (req, res, next) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .then((user) => {
+      if (!user) {
+        throw new NotFoundError('Пользователь с указанным _id не найден');
+      }
       res.send(user);
     })
     .catch((err) => {
@@ -141,7 +129,12 @@ const updateUser = (req, res, next) => {
 const updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
-    .then((newAvatar) => res.send(newAvatar))
+    .then((user) => {
+      if (!user) {
+        throw new NotFoundError('Пользователь с указанным _id не найден');
+      }
+      res.send({ avatar: user.avatar });
+    })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные при обновлении аватара'));
