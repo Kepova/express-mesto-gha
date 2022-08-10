@@ -91,9 +91,6 @@ const login = (req, res, next) => {
 
 const getСurrentUser = (req, res, next) => {
   const userCurrentId = req.user._id;
-  if (!validator.isMongoId(userCurrentId)) {
-    throw new BadRequestError('Передан некорректный _id пользователя');
-  }
   User.findById(userCurrentId)
     .then((user) => {
       if (!user) {

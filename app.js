@@ -49,10 +49,11 @@ app.use(auth);
 app.use('/users', UserRouter);
 app.use('/cards', CardsRouter);
 
-app.use(errors());
 app.use((req, res, next) => {
   next(new NotFoundError('Страница не найдена'));
 });
+
+app.use(errors());
 app.use(CentralizedError);
 
 app.listen(PORT);
