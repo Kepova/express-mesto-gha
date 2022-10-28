@@ -1,17 +1,23 @@
-**Ссылка на проект**
+# Проект Mesto (бэкенд)
+Бэкенд для проекта Mesto.
+На этом проекте тренировалась писать сервер на Node.js.
 
-Проект доступен на GitHub Pages [по этой ссылке](https://kepova.github.io/express-mesto-gha).
+## Функциональность проекта
+- создание баз данных пользователей и карточек,
+- регистрация и авторизация пользователя,
+- получение данных пользователя по ID,
+- редактирование данных пользователя,
+- редактирование аватара пользователя,
+- создание и удаление карточек,
+- лайк и дизлайк карточки.
 
+## Стек
+- Node.js,
+- Express.js,
+- MongoDB,
+- Ubuntu.
 
-[![Tests](https://github.com/yandex-praktikum/express-mesto-gha/actions/workflows/tests-13-sprint.yml/badge.svg)](https://github.com/yandex-praktikum/express-mesto-gha/actions/workflows/tests-13-sprint.yml) [![Tests](https://github.com/yandex-praktikum/express-mesto-gha/actions/workflows/tests-14-sprint.yml/badge.svg)](https://github.com/yandex-praktikum/express-mesto-gha/actions/workflows/tests-14-sprint.yml)
-# Проект Mesto фронтенд + бэкенд
-
-## Настройка бейджей статуса тестов
-Перед началом работы над проектом рекомендуется исправить бейджи, отражающие статус прохождения тестов.
-Для этого замените разметку бейджей на следующий фрагмент, подставив вместо `${имя_пользователя}` и `${имя_репозитория}` соответствующие значения.
-
-```
-[![Tests for sprint 13](https://github.com/Kepova/express-mesto-gha/actions/workflows/tests-13-sprint.yml/badge.svg)](https://github.com/Kepova/express-mesto-gha/actions/workflows/tests-13-sprint.yml) 
-
-[![Tests for sprint 14](https://github.com/Kepova/express-mesto-gha/actions/workflows/tests-14-sprint.yml/badge.svg)](https://github.com/Kepova/express-mesto-gha/actions/workflows/tests-14-sprint.yml)
-```
+## Запуск проекта
+- npm i - установка зависимостей,
+- npm run dev - запуск в режиме разработки с hot-reload,
+- npm run start - запуск приложения.
